@@ -52,7 +52,7 @@ public class CropImageView extends FrameLayout {
 
     // Sets the default image guidelines to show when resizing
     public static final int DEFAULT_GUIDELINES = 1;
-    public static final boolean DEFAULT_FIXED_ASPECT_RATIO = false;
+    public static final boolean DEFAULT_FIXED_ASPECT_RATIO = true;
     public static final int DEFAULT_ASPECT_RATIO_X = 1;
     public static final int DEFAULT_ASPECT_RATIO_Y = 1;
 

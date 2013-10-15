@@ -1,23 +1,20 @@
-Cropper
+CircleImageCropper
 =======
-The Cropper is an image cropping tool. It provides a way to set an image in XML and programmatically, and displays a resizable crop window on top of the image. Calling the method getCroppedImage() will then return the Bitmap marked by the crop window.
+The CircleImageCropper is an image cropping tool for Circle Image View used by several applications these days. 
+It provides a way to set an image in XML and programmatically, and displays a resizable circular crop window on top of the image. 
+Calling the method getCroppedCircleImage() will then return the Circle Bitmap marked by the circular crop window.
 
 Developers can customize the following attributes (both via XML and programmatically):
 
 - appearance of guidelines in the crop window
-- whether the aspect ratio is fixed or not
-- aspect ratio (if the aspect ratio is fixed)
 - image resource
 
 A public method to rotate the image by a specified number of degrees is also included. This can be used to provide the user with an option to fix the image orientation should Android miscalculate the intended orientation.
 
 Supported on API Level 7 and above.
 
-For more information, see the linked Github Wiki page. 
 
-https://github.com/edmodo/cropper/wiki
-
-![ScreenShot](http://i.imgur.com/3FhsTgfl.jpg)
+![ScreenShot](http://i.imgur.com/hndMzmm.png)
 
 License
 =======
