@@ -15,8 +15,11 @@ package com.edmodo.cropper.cropwindow;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.Region;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -157,14 +160,13 @@ public class CropOverlayView extends View {
             }
         }
 
-        // Draws the main crop window border.
-        canvas.drawRect(Edge.LEFT.getCoordinate(),
-                        Edge.TOP.getCoordinate(),
-                        Edge.RIGHT.getCoordinate(),
-                        Edge.BOTTOM.getCoordinate(),
-                        mBorderPaint);
 
-        drawCorners(canvas);
+        // Draw the circular border
+        float cx = (Edge.LEFT.getCoordinate() + Edge.RIGHT.getCoordinate())/2; 
+        float cy = (Edge.TOP.getCoordinate() + Edge.BOTTOM.getCoordinate())/2;
+        float radius = (Edge.RIGHT.getCoordinate() - Edge.LEFT.getCoordinate())/2;
+        
+        canvas.drawCircle(cx, cy, radius, mBorderPaint);
     }
 
     @Override
@@ -467,12 +469,23 @@ public class CropOverlayView extends View {
     }
 
     private void drawRuleOfThirdsGuidelines(Canvas canvas) {
-
+    	
+    	
         final float left = Edge.LEFT.getCoordinate();
         final float top = Edge.TOP.getCoordinate();
         final float right = Edge.RIGHT.getCoordinate();
         final float bottom = Edge.BOTTOM.getCoordinate();
 
+        
+        float cx = (left + right)/2; 
+        float cy = (top + bottom)/2;
+        float radius = (right - left)/2;
+        
+    	Path circleSelectionPath = new Path();
+        circleSelectionPath.addCircle(cx, cy, radius, Path.Direction.CW);
+        canvas.clipPath(circleSelectionPath, Region.Op.REPLACE);
+
+        
         // Draw vertical guidelines.
         final float oneThirdCropWidth = Edge.getWidth() / 3;
 
@@ -497,25 +510,23 @@ public class CropOverlayView extends View {
         final float right = Edge.RIGHT.getCoordinate();
         final float bottom = Edge.BOTTOM.getCoordinate();
 
-        /*-
-          -------------------------------------
-          |                top                |
-          -------------------------------------
-          |      |                    |       |
-          |      |                    |       |
-          | left |                    | right |
-          |      |                    |       |
-          |      |                    |       |
-          -------------------------------------
-          |              bottom               |
-          -------------------------------------
-         */
+        float cx = (left + right)/2; 
+        float cy = (top + bottom)/2;
+        float radius = (right - left)/2;
+        
+        
+        Path fullCanvasPath = new Path();
+        fullCanvasPath.addRect(bitmapRect.left, bitmapRect.top, bitmapRect.right, bitmapRect.bottom, Path.Direction.CW);
+        
+        Path circleSelectionPath = new Path();
+        circleSelectionPath.addCircle(cx, cy, radius, Path.Direction.CCW);
 
-        // Draw "top", "bottom", "left", then "right" quadrants.
-        canvas.drawRect(bitmapRect.left, bitmapRect.top, bitmapRect.right, top, mBackgroundPaint);
-        canvas.drawRect(bitmapRect.left, bottom, bitmapRect.right, bitmapRect.bottom, mBackgroundPaint);
-        canvas.drawRect(bitmapRect.left, top, left, bottom, mBackgroundPaint);
-        canvas.drawRect(right, top, bitmapRect.right, bottom, mBackgroundPaint);
+        canvas.clipPath(fullCanvasPath);
+        canvas.clipPath(circleSelectionPath, Region.Op.DIFFERENCE);
+        
+        //Draw semi-transparent background
+        canvas.drawRect(bitmapRect.left, bitmapRect.top, bitmapRect.right, bitmapRect.bottom, mBackgroundPaint);
+        
     }
 
     private void drawCorners(Canvas canvas) {

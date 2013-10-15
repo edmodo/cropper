@@ -67,18 +67,17 @@ public class MainActivity extends Activity {
 
         // Initialize components of the app
         final CropImageView cropImageView = (CropImageView) findViewById(R.id.CropImageView);
-        final SeekBar aspectRatioXSeek = (SeekBar) findViewById(R.id.aspectRatioXSeek);
-        final SeekBar aspectRatioYSeek = (SeekBar) findViewById(R.id.aspectRatioYSeek);
-        final ToggleButton fixedAspectRatioToggle = (ToggleButton) findViewById(R.id.fixedAspectRatioToggle);
         Spinner showGuidelinesSpin = (Spinner) findViewById(R.id.showGuidelinesSpin);
         
-        // Sets sliders to be disabled until fixedAspectRatio is set
-        aspectRatioXSeek.setEnabled(false);
-        aspectRatioYSeek.setEnabled(false);
-
         // Set initial spinner value
         showGuidelinesSpin.setSelection(ON_TOUCH);
         
+        //Set AspectRatio fixed for circular selection
+        cropImageView.setFixedAspectRatio(true);
+        
+        // Sets initial aspect ratio to 10/10
+        cropImageView.setAspectRatio(DEFAULT_ASPECT_RATIO_VALUES, DEFAULT_ASPECT_RATIO_VALUES);
+
         //Sets the rotate button
         final Button rotateButton = (Button) findViewById(R.id.Button_rotate);
         rotateButton.setOnClickListener(new View.OnClickListener() {
@@ -89,72 +88,7 @@ public class MainActivity extends Activity {
             }
         });
         
-        // Sets fixedAspectRatio
-        fixedAspectRatioToggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                cropImageView.setFixedAspectRatio(isChecked);
-                if (isChecked) {
-                    aspectRatioXSeek.setEnabled(true);
-                    aspectRatioYSeek.setEnabled(true);
-                }
-                else {
-                    aspectRatioXSeek.setEnabled(false);
-                    aspectRatioYSeek.setEnabled(false);
-                }
-            }
-        });
-
-        // Sets initial aspect ratio to 10/10, for demonstration purposes
-        cropImageView.setAspectRatio(DEFAULT_ASPECT_RATIO_VALUES, DEFAULT_ASPECT_RATIO_VALUES);
-
-        // Sets aspectRatioX
-        final TextView aspectRatioX = (TextView) findViewById(R.id.aspectRatioX);
-
-        aspectRatioXSeek.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar aspectRatioXSeek, int progress, boolean fromUser) {
-                try {
-                    mAspectRatioX = progress;
-                    cropImageView.setAspectRatio(progress, mAspectRatioY);
-                    aspectRatioX.setText(" " + progress);
-                } catch (IllegalArgumentException e) {
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
-        // Sets aspectRatioY
-        final TextView aspectRatioY = (TextView) findViewById(R.id.aspectRatioY);
-
-        aspectRatioYSeek.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar aspectRatioYSeek, int progress, boolean fromUser) {
-                try {
-                    mAspectRatioY = progress;
-                    cropImageView.setAspectRatio(mAspectRatioX, progress);
-                    aspectRatioY.setText(" " + progress);
-                } catch (IllegalArgumentException e) {
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
+        
 
         // Sets up the Spinner
         showGuidelinesSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -172,7 +106,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                croppedImage = cropImageView.getCroppedImage();
+                croppedImage = cropImageView.getCroppedCircleImage();
                 ImageView croppedImageView = (ImageView) findViewById(R.id.croppedImageView);
                 croppedImageView.setImageBitmap(croppedImage);
             }
