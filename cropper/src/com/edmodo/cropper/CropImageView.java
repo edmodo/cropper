@@ -20,6 +20,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -446,6 +448,19 @@ public class CropImageView extends FrameLayout {
 
         mAspectRatioY = aspectRatioY;
         mCropOverlayView.setAspectRatioY(mAspectRatioY);
+    }
+
+    /**
+     * Recycles the CropImageView's inner Bitmap instances.
+     */
+    public void recycle() {
+        mBitmap.recycle();
+
+        Drawable d = mImageView.getDrawable();
+        if (d instanceof BitmapDrawable) {
+            BitmapDrawable bd = (BitmapDrawable) d;
+            bd.getBitmap().recycle();
+        }
     }
 
     /**
