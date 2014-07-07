@@ -50,8 +50,10 @@ public class CropImageView extends FrameLayout {
     public static final boolean DEFAULT_FIXED_ASPECT_RATIO = false;
     public static final int DEFAULT_ASPECT_RATIO_X = 1;
     public static final int DEFAULT_ASPECT_RATIO_Y = 1;
+	public static final int DEFAULT_SCALE_TYPE_INDEX = 0;
 
     private static final int DEFAULT_IMAGE_RESOURCE = 0;
+	private static final ImageView.ScaleType[] VALID_SCALE_TYPES = new ImageView.ScaleType[]{ImageView.ScaleType.CENTER_INSIDE, ImageView.ScaleType.FIT_CENTER};
 
     private static final String DEGREES_ROTATED = "DEGREES_ROTATED";
 
@@ -70,6 +72,7 @@ public class CropImageView extends FrameLayout {
     private int mAspectRatioX = DEFAULT_ASPECT_RATIO_X;
     private int mAspectRatioY = DEFAULT_ASPECT_RATIO_Y;
     private int mImageResource = DEFAULT_IMAGE_RESOURCE;
+	private ImageView.ScaleType mScaleType = VALID_SCALE_TYPES[DEFAULT_SCALE_TYPE_INDEX];
 
     // Constructors ////////////////////////////////////////////////////////////
 
@@ -90,6 +93,7 @@ public class CropImageView extends FrameLayout {
             mAspectRatioX = ta.getInteger(R.styleable.CropImageView_aspectRatioX, DEFAULT_ASPECT_RATIO_X);
             mAspectRatioY = ta.getInteger(R.styleable.CropImageView_aspectRatioY, DEFAULT_ASPECT_RATIO_Y);
             mImageResource = ta.getResourceId(R.styleable.CropImageView_imageResource, DEFAULT_IMAGE_RESOURCE);
+			mScaleType = VALID_SCALE_TYPES[ta.getInt(R.styleable.CropImageView_scaleType, DEFAULT_SCALE_TYPE_INDEX)];
         } finally {
             ta.recycle();
         }
@@ -137,7 +141,7 @@ public class CropImageView extends FrameLayout {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
 
         if (mBitmap != null) {
-            final Rect bitmapRect = ImageViewUtil.getBitmapRectCenterInside(mBitmap, this);
+            final Rect bitmapRect = ImageViewUtil.getBitmapRect(mBitmap, this, mScaleType);
             mCropOverlayView.setBitmapRect(bitmapRect);
         } else {
             mCropOverlayView.setBitmapRect(EMPTY_RECT);
@@ -201,10 +205,11 @@ public class CropImageView extends FrameLayout {
             mLayoutWidth = width;
             mLayoutHeight = height;
 
-            final Rect bitmapRect = ImageViewUtil.getBitmapRectCenterInside(mBitmap.getWidth(),
+            final Rect bitmapRect = ImageViewUtil.getBitmapRect(mBitmap.getWidth(),
                                                                             mBitmap.getHeight(),
                                                                             mLayoutWidth,
-                                                                            mLayoutHeight);
+                                                                            mLayoutHeight,
+																			mScaleType);
             mCropOverlayView.setBitmapRect(bitmapRect);
 
             // MUST CALL THIS
@@ -327,7 +332,7 @@ public class CropImageView extends FrameLayout {
      */
     public Bitmap getCroppedImage() {
 
-        final Rect displayedImageRect = ImageViewUtil.getBitmapRectCenterInside(mBitmap, mImageView);
+        final Rect displayedImageRect = ImageViewUtil.getBitmapRect(mBitmap, mImageView, mScaleType);
 
         // Get the scale factor between the actual Bitmap dimensions and the
         // displayed dimensions for width.
@@ -371,7 +376,7 @@ public class CropImageView extends FrameLayout {
      */
     public RectF getActualCropRect() {
 
-        final Rect displayedImageRect = ImageViewUtil.getBitmapRectCenterInside(mBitmap, mImageView);
+        final Rect displayedImageRect = ImageViewUtil.getBitmapRect(mBitmap, mImageView, mScaleType);
 
         // Get the scale factor between the actual Bitmap dimensions and the
         // displayed dimensions for width.
@@ -465,6 +470,11 @@ public class CropImageView extends FrameLayout {
         mDegreesRotated = mDegreesRotated % 360;
     }
 
+	private void setScaleType(ImageView.ScaleType scaleType) {
+		mScaleType = scaleType;
+		if (mImageView != null) mImageView.setScaleType(mScaleType);
+	}
+
     // Private Methods /////////////////////////////////////////////////////////
 
     private void init(Context context) {
@@ -473,7 +483,8 @@ public class CropImageView extends FrameLayout {
         final View v = inflater.inflate(R.layout.crop_image_view, this, true);
 
         mImageView = (ImageView) v.findViewById(R.id.ImageView_image);
-
+		mImageView.setScaleType(mScaleType);
+		
         setImageResource(mImageResource);
         mCropOverlayView = (CropOverlayView) v.findViewById(R.id.CropOverlayView);
         mCropOverlayView.setInitialAttributeValues(mGuidelines, mFixAspectRatio, mAspectRatioX, mAspectRatioY);
