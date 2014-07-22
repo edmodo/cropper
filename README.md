@@ -8,6 +8,7 @@ Developers can customize the following attributes (both via XML and programmatic
 - whether the aspect ratio is fixed or not
 - aspect ratio (if the aspect ratio is fixed)
 - image resource
+- window padding ratio
 
 A public method to rotate the image by a specified number of degrees is also included. This can be used to provide the user with an option to fix the image orientation should Android miscalculate the intended orientation.
 

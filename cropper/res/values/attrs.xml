@@ -10,6 +10,7 @@
         <attr name="aspectRatioX" format="integer"/>
         <attr name="aspectRatioY" format= "integer"/>
         <attr name="imageResource" format="reference"/>
+        <attr name="windowPaddingRatio" format="float"/>
     </declare-styleable>
 
 </resources>

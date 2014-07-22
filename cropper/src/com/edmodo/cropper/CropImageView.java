@@ -50,6 +50,7 @@ public class CropImageView extends FrameLayout {
     public static final boolean DEFAULT_FIXED_ASPECT_RATIO = false;
     public static final int DEFAULT_ASPECT_RATIO_X = 1;
     public static final int DEFAULT_ASPECT_RATIO_Y = 1;
+    public static final float DEFAULT_WINDOW_PADDING_RATIO = 0.1f;
 
     private static final int DEFAULT_IMAGE_RESOURCE = 0;
 
@@ -70,6 +71,7 @@ public class CropImageView extends FrameLayout {
     private int mAspectRatioX = DEFAULT_ASPECT_RATIO_X;
     private int mAspectRatioY = DEFAULT_ASPECT_RATIO_Y;
     private int mImageResource = DEFAULT_IMAGE_RESOURCE;
+    private float mWindowPaddingRatio = DEFAULT_WINDOW_PADDING_RATIO;
 
     // Constructors ////////////////////////////////////////////////////////////
 
@@ -90,6 +92,8 @@ public class CropImageView extends FrameLayout {
             mAspectRatioX = ta.getInteger(R.styleable.CropImageView_aspectRatioX, DEFAULT_ASPECT_RATIO_X);
             mAspectRatioY = ta.getInteger(R.styleable.CropImageView_aspectRatioY, DEFAULT_ASPECT_RATIO_Y);
             mImageResource = ta.getResourceId(R.styleable.CropImageView_imageResource, DEFAULT_IMAGE_RESOURCE);
+            mWindowPaddingRatio = ta.getFloat(R.styleable.CropImageView_windowPaddingRatio, DEFAULT_WINDOW_PADDING_RATIO);
+
         } finally {
             ta.recycle();
         }
@@ -476,7 +480,7 @@ public class CropImageView extends FrameLayout {
 
         setImageResource(mImageResource);
         mCropOverlayView = (CropOverlayView) v.findViewById(R.id.CropOverlayView);
-        mCropOverlayView.setInitialAttributeValues(mGuidelines, mFixAspectRatio, mAspectRatioX, mAspectRatioY);
+        mCropOverlayView.setInitialAttributeValues(mGuidelines, mFixAspectRatio, mAspectRatioX, mAspectRatioY, mWindowPaddingRatio);
     }
 
     /**

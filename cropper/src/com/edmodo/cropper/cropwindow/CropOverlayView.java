@@ -103,6 +103,9 @@ public class CropOverlayView extends View {
     // only used when mMaintainAspectRatio is true.
     private float mTargetAspectRatio = ((float) mAspectRatioX) / mAspectRatioY;
 
+    // The padding of the crop window with respect to the image.
+    private float mWindowPaddingRatio = CropImageView.DEFAULT_WINDOW_PADDING_RATIO;
+
     // Instance variables for customizable attributes
     private int mGuidelines;
 
@@ -315,11 +318,13 @@ public class CropOverlayView extends View {
      *            ratio
      * @param aspectRatioY float that specifies the new Y value of the aspect
      *            ratio
+     * @param windowPaddingRatio float that specifies the window padding ratio
      */
     public void setInitialAttributeValues(int guidelines,
                                           boolean fixAspectRatio,
                                           int aspectRatioX,
-                                          int aspectRatioY) {
+                                          int aspectRatioY,
+                                          float windowPaddingRatio) {
         if (guidelines < 0 || guidelines > 2)
             throw new IllegalArgumentException("Guideline value must be set between 0 and 2. See documentation.");
         else
@@ -339,6 +344,12 @@ public class CropOverlayView extends View {
         else {
             mAspectRatioY = aspectRatioY;
             mTargetAspectRatio = ((float) mAspectRatioX) / mAspectRatioY;
+        }
+
+        if (windowPaddingRatio < 0.0f || windowPaddingRatio > 1.0f) {
+            throw new IllegalArgumentException("Cannot set window padding ratio to a number less than 0 or greater than 1.");
+        } else {
+            mWindowPaddingRatio = windowPaddingRatio;
         }
 
     }
@@ -441,8 +452,8 @@ public class CropOverlayView extends View {
         } else { // ... do not fix aspect ratio...
 
             // Initialize crop window to have 10% padding w/ respect to image.
-            final float horizontalPadding = 0.1f * bitmapRect.width();
-            final float verticalPadding = 0.1f * bitmapRect.height();
+            final float horizontalPadding = mWindowPaddingRatio * bitmapRect.width();
+            final float verticalPadding = mWindowPaddingRatio * bitmapRect.height();
 
             Edge.LEFT.setCoordinate(bitmapRect.left + horizontalPadding);
             Edge.TOP.setCoordinate(bitmapRect.top + verticalPadding);
