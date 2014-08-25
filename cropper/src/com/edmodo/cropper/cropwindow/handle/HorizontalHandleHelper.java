@@ -83,4 +83,41 @@ class HorizontalHandleHelper extends HandleHelper {
             mEdge.adjustCoordinate(targetAspectRatio);
         }
     }
+
+    @Override
+    void updateCropWindow(float x,
+                          float y,
+                          float minAspectRatio,
+                          float maxAspectRatio,
+                          Rect imageRect,
+                          float snapRadius) {
+
+
+        // Adjust this Edge accordingly.
+        mEdge.adjustCoordinate(x, y, imageRect, snapRadius, 1);
+
+        float left = Edge.LEFT.getCoordinate();
+        float top = Edge.TOP.getCoordinate();
+        float right = Edge.RIGHT.getCoordinate();
+        float bottom = Edge.BOTTOM.getCoordinate();
+
+        // After this Edge is moved, our crop window might be out of the given aspect ratios bounds
+        float minHeight = AspectRatioUtil.calculateHeight(left, right, maxAspectRatio);
+        float maxHeight = AspectRatioUtil.calculateHeight(left, right, minAspectRatio);
+        float currentHeight = bottom - top;
+        float offsetHigh = currentHeight - maxHeight;
+        float offsetLow = currentHeight - minHeight;
+
+        if (mEdge.equals(Edge.BOTTOM)) {
+            offsetHigh *= -1;
+            offsetLow *= -1;
+        }
+
+        // Adjust the crop window so that it stays in the given aspect ratio bounds
+        if (currentHeight > maxHeight) {
+            mEdge.offset(offsetHigh);
+        } else if (currentHeight < minHeight) {
+            mEdge.offset(offsetLow);
+        }
+    }
 }

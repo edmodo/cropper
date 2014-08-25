@@ -60,4 +60,14 @@ public enum Handle {
 
         mHelper.updateCropWindow(x, y, targetAspectRatio, imageRect, snapRadius);
     }
+
+    public void updateCropWindow(float x,
+                                 float y,
+                                 float minAspectRatio,
+                                 float maxAspectRatio,
+                                 Rect imageRect,
+                                 float snapRadius) {
+
+        mHelper.updateCropWindow(x, y, minAspectRatio, maxAspectRatio, imageRect, snapRadius);
+    }
 }
