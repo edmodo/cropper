@@ -95,6 +95,10 @@ public class CropOverlayView extends View {
     // (indicated by mTargetAspectRatio).
     private boolean mFixAspectRatio = CropImageView.DEFAULT_FIXED_ASPECT_RATIO;
 
+    // Flag indicating if the crop area ratio should always be kept in certain bounds
+    // (indicated by mMinimumAspectRatio and mMaximumAspectRatio).
+    private boolean mFixAspectRatioBounds = CropImageView.DEFAULT_FIXED_ASPECT_RATIO_BOUNDS;
+
     // Floats to save the current aspect ratio of the image
     private int mAspectRatioX = CropImageView.DEFAULT_ASPECT_RATIO_X;
     private int mAspectRatioY = CropImageView.DEFAULT_ASPECT_RATIO_Y;
@@ -102,6 +106,11 @@ public class CropOverlayView extends View {
     // The aspect ratio that the crop area should maintain; this variable is
     // only used when mMaintainAspectRatio is true.
     private float mTargetAspectRatio = ((float) mAspectRatioX) / mAspectRatioY;
+
+    // The minimum and maximum aspect ratios that the crop area should maintain;
+    // this variable is only used when mMaintainAspectRatio is true.
+    private float mMinimumAspectRatio = CropImageView.DEFAULT_ASPECT_RATIO_X / CropImageView.DEFAULT_ASPECT_RATIO_Y;
+    private float mMaximumAspectRatio = CropImageView.DEFAULT_ASPECT_RATIO_X / CropImageView.DEFAULT_ASPECT_RATIO_Y;
 
     // Instance variables for customizable attributes
     private int mGuidelines;
@@ -254,6 +263,9 @@ public class CropOverlayView extends View {
     public void setFixedAspectRatio(boolean fixAspectRatio)
     {
         mFixAspectRatio = fixAspectRatio;
+        if (fixAspectRatio && mFixAspectRatioBounds) {
+            mFixAspectRatioBounds = false;
+        }
 
         if (initializedCropWindow) {
             initCropWindow(mBitmapRect);
@@ -300,6 +312,36 @@ public class CropOverlayView extends View {
                 initCropWindow(mBitmapRect);
                 invalidate();
             }
+        }
+    }
+
+    /**
+     * Sets bounds for the aspect ratio and enables fixedAspectRationBounds mode
+     *
+     * @param minAspectRatio float that specifies the new minimum aspect ratio
+     * @param maxAspectRatio float that specifies the new maximum aspect ratio
+     *
+     */
+    public void setFixedAspectRatioBounds(float minAspectRatio, float maxAspectRatio)
+    {
+        mFixAspectRatio = false;
+        mFixAspectRatioBounds = true;
+
+        if (minAspectRatio <= 0 || maxAspectRatio <= 0)
+            throw new IllegalArgumentException("Cannot set aspect ratio to a number less than or equal to 0.");
+
+        if (minAspectRatio > maxAspectRatio)
+            throw new IllegalArgumentException("minAspectRatio has to be smaller than maxAspectRatio.");
+
+        mMinimumAspectRatio = minAspectRatio;
+        mMaximumAspectRatio = maxAspectRatio;
+
+        // set mTargetAspectRation to utilize initial crop window calculation in initCropWindow
+        mTargetAspectRatio = (minAspectRatio + maxAspectRatio) / 2;
+
+        if (initializedCropWindow) {
+            initCropWindow(mBitmapRect);
+            invalidate();
         }
     }
 
@@ -388,7 +430,7 @@ public class CropOverlayView extends View {
         if (initializedCropWindow == false)
             initializedCropWindow = true;
 
-        if (mFixAspectRatio) {
+        if (mFixAspectRatio || mFixAspectRatioBounds) {
 
             // If the image aspect ratio is wider than the crop aspect ratio,
             // then the image height is the determining initial length. Else,
@@ -630,6 +672,8 @@ public class CropOverlayView extends View {
         // Calculate the new crop window size/position.
         if (mFixAspectRatio) {
             mPressedHandle.updateCropWindow(x, y, mTargetAspectRatio, mBitmapRect, mSnapRadius);
+        } else if (mFixAspectRatioBounds) {
+            mPressedHandle.updateCropWindow(x, y, mMinimumAspectRatio, mMaximumAspectRatio, mBitmapRect, mSnapRadius);
         } else {
             mPressedHandle.updateCropWindow(x, y, mBitmapRect, mSnapRadius);
         }

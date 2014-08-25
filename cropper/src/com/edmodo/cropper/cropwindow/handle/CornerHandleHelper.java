@@ -17,6 +17,7 @@ import android.graphics.Rect;
 
 import com.edmodo.cropper.cropwindow.edge.Edge;
 import com.edmodo.cropper.cropwindow.edge.EdgePair;
+import com.edmodo.cropper.util.AspectRatioUtil;
 
 /**
  * HandleHelper class to handle corner Handles (i.e. top-left, top-right,
@@ -49,6 +50,48 @@ class CornerHandleHelper extends HandleHelper {
         if (secondaryEdge.isOutsideMargin(imageRect, snapRadius)) {
             secondaryEdge.snapToRect(imageRect);
             primaryEdge.adjustCoordinate(targetAspectRatio);
+        }
+    }
+
+    @Override
+    void updateCropWindow(float x,
+                          float y,
+                          float minAspectRatio,
+                          float maxAspectRatio,
+                          Rect imageRect,
+                          float snapRadius) {
+
+        // Adjust this EdgePair accordingly.
+        final EdgePair activeEdges = getActiveEdges();
+        final Edge primaryEdge = activeEdges.primary;
+        final Edge secondaryEdge = activeEdges.secondary;
+
+        primaryEdge.adjustCoordinate(x, y, imageRect, snapRadius, 1);
+        secondaryEdge.adjustCoordinate(x, y, imageRect, snapRadius, 1);
+
+        float left = Edge.LEFT.getCoordinate();
+        float top = Edge.TOP.getCoordinate();
+        float right = Edge.RIGHT.getCoordinate();
+        float bottom = Edge.BOTTOM.getCoordinate();
+
+        // After this EdgePair is moved, our crop window might be out of the given aspect ratios bounds
+        float minWidth = AspectRatioUtil.calculateWidth(top, bottom, minAspectRatio);
+        float maxWidth = AspectRatioUtil.calculateWidth(top, bottom, maxAspectRatio);
+        float currentWidth = right - left;
+        float widthOffsetHigh = currentWidth - maxWidth;
+        float widthOffsetLow = currentWidth - minWidth;
+
+        if (secondaryEdge.equals(Edge.RIGHT)) {
+            widthOffsetHigh *= -1;
+            widthOffsetLow *= -1;
+        }
+
+        // Adjust the crop window so that it stays in the given aspect ratio bounds
+        float currentAspectRatio = AspectRatioUtil.calculateAspectRatio(left, top, right, bottom);
+        if (currentAspectRatio < minAspectRatio) {
+            secondaryEdge.offset(widthOffsetLow);
+        } else if (currentAspectRatio > maxAspectRatio) {
+            secondaryEdge.offset(widthOffsetHigh);
         }
     }
 }

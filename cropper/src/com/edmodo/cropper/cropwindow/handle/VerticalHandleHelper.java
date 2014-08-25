@@ -81,4 +81,40 @@ class VerticalHandleHelper extends HandleHelper {
             mEdge.adjustCoordinate(targetAspectRatio);
         }
     }
+
+    @Override
+    void updateCropWindow(float x,
+                          float y,
+                          float minAspectRatio,
+                          float maxAspectRatio,
+                          Rect imageRect,
+                          float snapRadius) {
+
+        // Adjust this Edge accordingly.
+        mEdge.adjustCoordinate(x, y, imageRect, snapRadius, 1);
+
+        float left = Edge.LEFT.getCoordinate();
+        float top = Edge.TOP.getCoordinate();
+        float right = Edge.RIGHT.getCoordinate();
+        float bottom = Edge.BOTTOM.getCoordinate();
+
+        // After this Edge is moved, our crop window might be out of the given aspect ratios bounds
+        float minWidth = AspectRatioUtil.calculateWidth(top, bottom, minAspectRatio);
+        float maxWidth = AspectRatioUtil.calculateWidth(top, bottom, maxAspectRatio);
+        float currentWidth = right - left;
+        float offsetHigh = currentWidth - maxWidth;
+        float offsetLow = currentWidth - minWidth;
+
+        if (mEdge.equals(Edge.RIGHT)) {
+            offsetHigh *= -1;
+            offsetLow *= -1;
+        }
+
+        // Adjust the crop window so that it stays in the given aspect ratio bounds
+        if (currentWidth > maxWidth) {
+            mEdge.offset(offsetHigh);
+        } else if (currentWidth < minWidth) {
+            mEdge.offset(offsetLow);
+        }
+    }
 }

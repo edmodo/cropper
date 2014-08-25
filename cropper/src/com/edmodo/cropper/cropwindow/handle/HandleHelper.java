@@ -97,6 +97,25 @@ abstract class HandleHelper {
                                    float snapRadius);
 
     /**
+     * Updates the crop window by directly setting the Edge coordinates; this
+     * method keeps the aspect ratio between two given bounds.
+     *
+     * @param x the new x-coordinate of this handle
+     * @param y the new y-coordinate of this handle
+     * @param minAspectRatio the minimum aspect ratio to maintain
+     * @param maxAspectRatio the maximum aspect ratio to maintain
+     * @param imageRect the bounding rectangle of the image
+     * @param snapRadius the maximum distance (in pixels) at which the crop
+     *            window should snap to the image
+     */
+    abstract void updateCropWindow(float x,
+                                   float y,
+                                   float minAspectRatio,
+                                   float maxAspectRatio,
+                                   Rect imageRect,
+                                   float snapRadius);
+
+    /**
      * Gets the Edges associated with this handle (i.e. the Edges that should be
      * moved when this handle is dragged). This is used when we are not
      * maintaining the aspect ratio.

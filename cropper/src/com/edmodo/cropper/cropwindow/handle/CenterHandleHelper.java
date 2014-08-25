@@ -81,4 +81,15 @@ class CenterHandleHelper extends HandleHelper {
 
         updateCropWindow(x, y, imageRect, snapRadius);
     }
+
+    @Override
+    void updateCropWindow(float x,
+                          float y,
+                          float minAspectRatio,
+                          float maxAspectRatio,
+                          Rect imageRect,
+                          float snapRadius) {
+
+        updateCropWindow(x, y, imageRect, snapRadius);
+    }
 }
