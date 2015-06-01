@@ -54,6 +54,7 @@ public class CropImageView extends FrameLayout {
     private static final int DEFAULT_IMAGE_RESOURCE = 0;
 
     private static final String DEGREES_ROTATED = "DEGREES_ROTATED";
+    private static final String BITMAP = "BITMAP";
 
     private ImageView mImageView;
     private CropOverlayView mCropOverlayView;
@@ -106,6 +107,7 @@ public class CropImageView extends FrameLayout {
 
         bundle.putParcelable("instanceState", super.onSaveInstanceState());
         bundle.putInt(DEGREES_ROTATED, mDegreesRotated);
+        bundle.putParcelable(BITMAP, mBitmap);
 
         return bundle;
 
@@ -117,6 +119,9 @@ public class CropImageView extends FrameLayout {
         if (state instanceof Bundle) {
 
             final Bundle bundle = (Bundle) state;
+
+            mBitmap = bundle.getParcelable(BITMAP);
+            setImageBitmap(mBitmap);
 
             if (mBitmap != null) {
                 // Fixes the rotation of the image when orientation changes.
