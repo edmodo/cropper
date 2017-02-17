@@ -98,6 +98,9 @@ public class CropImageView extends ImageView {
     // The Handle that is currently pressed; null if no Handle is pressed.
     private Handle mPressedHandle;
 
+    // Padding of the crop area
+    private float mPaddingCropper = 0.1f;
+    
     // Flag indicating if the crop area should always be a certain aspect ratio (indicated by mTargetAspectRatio).
     private boolean mFixAspectRatio;
 
@@ -212,6 +215,18 @@ public class CropImageView extends ImageView {
     public void setGuidelines(int guidelinesMode) {
         mGuidelinesMode = guidelinesMode;
         invalidate(); // Request onDraw() to get called again.
+    }
+
+    /**
+     * Sets the cropper padding
+     *
+     * @param paddingCropper float that sets the cropper padding
+     *
+     * @see {@link #setCropperPadding(float)}
+     */
+    public void setCropperPadding(float paddingCropper) {
+        mPaddingCropper = paddingCropper;
+        requestLayout(); // Request measure/layout to be run again.
     }
 
     /**
@@ -353,8 +368,8 @@ public class CropImageView extends ImageView {
         } else {
 
             // Initialize crop window to have 10% padding w/ respect to Drawable's bounds.
-            final float horizontalPadding = 0.1f * bitmapRect.width();
-            final float verticalPadding = 0.1f * bitmapRect.height();
+            final float horizontalPadding = mPaddingCropper * bitmapRect.width();
+            final float verticalPadding = mPaddingCropper * bitmapRect.height();
 
             Edge.LEFT.setCoordinate(bitmapRect.left + horizontalPadding);
             Edge.TOP.setCoordinate(bitmapRect.top + verticalPadding);
