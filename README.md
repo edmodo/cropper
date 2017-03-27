@@ -29,7 +29,7 @@ Installation
 	}
 
 	dependencies {
-	  compile 'com.edmodo:cropper:1.0.1'
+	  compile 'com.edmodo:cropper:2.0.0'
 	}
 
 License
