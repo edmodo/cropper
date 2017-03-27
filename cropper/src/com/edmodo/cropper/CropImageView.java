@@ -274,8 +274,8 @@ public class CropImageView extends ImageView {
         final float transY = matrixValues[Matrix.MTRANS_Y];
 
         // Ensure that the left and top edges are not outside of the ImageView bounds.
-        final float bitmapLeft = (transX < 0) ? Math.abs(transX) : 0;
-        final float bitmapTop = (transY < 0) ? Math.abs(transY) : 0;
+        final float bitmapLeft = -transX;
+        final float bitmapTop = -transY;
 
         // Get the original bitmap object.
         final Bitmap originalBitmap = ((BitmapDrawable) drawable).getBitmap();
